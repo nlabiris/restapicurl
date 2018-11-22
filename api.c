@@ -47,11 +47,11 @@ size_t writefunc(void *ptr, size_t size, size_t nmemb, void *stream) {
 //     return 0;
 // }
 
-Response request(const char *method, const char *endpoint, const char *headers, const char *body, const char *params) {
+Response request(char *domain, const char *method, const char *endpoint, const Headers headers, const char *body, const char *params) {
     Response response;
     // char domain[80] = "https://jsonplaceholder.typicode.com";
     CURL *curl = NULL;
-    CURLcode res;
+    // CURLcode res;
     struct curl_slist *curl_headers = NULL;
 
     curl_global_init(CURL_GLOBAL_ALL);
@@ -64,12 +64,12 @@ Response request(const char *method, const char *endpoint, const char *headers, 
         curl_headers = curl_slist_append(curl_headers, "Content-Type: application/json");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, curl_headers);
         curl_easy_setopt(curl, CURLOPT_URL, strcat(domain, endpoint));
-        if (method != "GET" && body != null) {
+        if (strcmp(method, "GET") && body != NULL) {
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body);
         }
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-        res = curl_easy_perform(curl);
+        curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         curl_slist_free_all(curl_headers);
         curl_global_cleanup();
@@ -78,49 +78,49 @@ Response request(const char *method, const char *endpoint, const char *headers, 
     return response;
 }
 
-Response get(const char *endpoint, const char *headers, const char *params) {
-    return request("GET", endpoint, headers, NULL, params);
+Response get(const Api *api, const Request *req) {
+    return request(api->domain, "GET", req->endpoint, req->headers, NULL, req->params);
 }
 
-Response post(const char *endpoint, const char *headers, const char *body, const char *params) {
-    return request("POST", endpoint, headers, body, params);
+Response post(const Api *api, const Request *req) {
+    return request(api->domain, "POST", req->endpoint, req->headers, req->body, req->params);
 }
 
-Response put(const char *endpoint, const char *headers, const char *body, const char *params) {
-    return request("PUT", endpoint, headers, body, params);
+Response put(const Api *api, const Request *req) {
+    return request(api->domain, "PUT", req->endpoint, req->headers, req->body, req->params);
 }
 
-Response delete(const char *endpoint, const char *headers, const char *body, const char *params) {
-    return request("DELETE", endpoint, headers, body, params);
+Response delete(const Api *api, const Request *req) {
+    return request(api->domain, "DELETE", req->endpoint, req->headers, req->body, req->params);
 }
 
 void set_global_headers(Api *api, const char **headers) {
     int i = 0;
     if (headers) {
-        for(i = 0; i < api->headers->length; i++) {
-            strcpy(api->global_headers[i], headers[i]);
+        for(i = 0; i < api->headers.rows; i++) {
+            strcpy(api->headers.data[i], headers[i]);
         }
     }
 }
 
 void clear_global_headers(Api *api) {
     int i = 0;
-    if (headers) {
-        for(i = 0; i < api->headers->length; i++) {
-            free(api->headers[i]));
-        }
-        free(api->headers);
-        api->headers = NULL;
+    for(i = 0; i < api->headers.rows; i++) {
+        free(api->headers.data[i]);
     }
+    free(api->headers.data);
+    api->headers.data = NULL;
 }
 
 void init_api(Api *api, const char *domain) {
-    int i = 0;
     api->domain = (char *)malloc(strlen(domain) * sizeof(char));
-    api->headers->rows = 20;
-    api->headers->columns = 1024;
-    api->headers->data = (char *)malloc(api->headers->rows * sizeof(char));
-    for(i = 0; i < api->headers->columns; i++) {
-        api->headers->data[i] = (char **)malloc(api->headers->columns * sizeof(char *));
-    }
+    strcpy(api->domain, domain);
+}
+
+void destroy_api(Api *api) {
+    free(api->domain);
+    free(api);
+    api->domain = NULL;
+    api = NULL;
+
 }
