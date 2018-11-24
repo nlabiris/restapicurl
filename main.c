@@ -4,22 +4,26 @@
 #include "api.h"
 
 int main(int argc, char **argv) {
-    // char endpoint[50] = "/posts";
-    // char *body = "{ \"title\": \"foo foo\", \"body\": \"bar\", \"userId\": 1 }";
-    // Response s = post(endpoint, body);
-
-    char endpoint[50] = "/posts/10";
-    Api *api = malloc(sizeof(Api));
-    Request *request = malloc(sizeof(Request));
-    init_api(api, "https://jsonplaceholder.typicode.com");
-    printf("\n%s\n", api->domain);
-    strcpy(request->endpoint, endpoint);
+    Api api;
+    Request request;
+    
+    init_api(&api, "https://jsonplaceholder.typicode.com");
+    request = create("/posts/1/comments", NULL, NULL);
     Response response = get(api, request);
-    // char endpoint[50] = "/posts/101";
-    // char *body = "{ \"title\": \"foo foo\", \"body\": \"bar\", \"userId\": 1 }";
-    // Response s = delete(endpoint, NULL);
-    printf("\n%s\n", response.data);
-    free(response.data);
-    destroy_api(api);
+    printf("\n%s\n", response.body);
+
+    request = create("/posts", "{ \"title\": \"foo foo\", \"body\": \"bar\", \"userId\": 1 }", NULL);
+    response = post(api, request);
+    printf("\n%s\n", response.body);
+
+    // request = create("/posts/1", "{ \"title\": \"foo foo test\", \"body\": \"bar\", \"userId\": 10 }", NULL);
+    // Response response = put(api, request);
+
+    // request = create("/posts/1", NULL, NULL);
+    // Response response = delete(api, request);
+
+    cleanup(&request, &response);
+    destroy_api(&api);
+
     return EXIT_SUCCESS;
 }
