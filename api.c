@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <curl/curl.h>
-#include <jansson.h>
 #include "api.h"
 
 void init_response(Response *response) {

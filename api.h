@@ -1,3 +1,6 @@
+#ifndef H_API
+#define H_API
+
 typedef struct _response {
     char *body;
     size_t len;
@@ -34,3 +37,5 @@ void init_api(Api *api, char *domain);
 Request create(char *endpoint, char *body, char *params);
 void cleanup(Request *request, Response *response);
 void destroy_api(Api *api);
+
+#endif
