@@ -7,16 +7,19 @@ TARGET=bin/main
 # Make executables for all targets
 all: $(TARGET)
 
-$(TARGET): src/main.o src/api.o src/json.o
+$(TARGET): src/main.o src/api.o src/json.o src/list.o
 	$(CC) $(LDFLAGS) $(CFLAGS) $^ -o $@ $(LDLIBS)
 
-main.o: src/main.c src/api.c include/api.h src/json.c include/json.h
+main.o: src/main.c src/api.c include/api.h src/json.c include/json.h src/list.c include/list.h
 	$(CC) $(CFLAGS) -c $<
 
 api.o: src/api.c include/api.h
 	$(CC) $(CFLAGS) -c $<
 
 json.o: src/json.c include/json.h
+	$(CC) $(CFLAGS) -c $<
+
+list.o: src/list.c include/list.h
 	$(CC) $(CFLAGS) -c $<
 
 # Clean object files

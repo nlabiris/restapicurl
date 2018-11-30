@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     Request request;
     
     init_api(&api, "https://jsonplaceholder.typicode.com");
-    request = create("/posts/2", NULL, NULL);
+    request = create("/posts", NULL, NULL);
     Response response = get(api, request);
     // printf("\n%s\n", response.body);
 

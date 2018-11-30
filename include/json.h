@@ -10,7 +10,7 @@ typedef struct _post {
     char *body;
 } Post;
 
-Post get_post(json_t *data);
+Post *get_post(json_t *data);
 void parse_json(char *data);
 
 #endif
